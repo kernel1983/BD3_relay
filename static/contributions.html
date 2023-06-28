@@ -140,9 +140,16 @@ window.onload = async () => {
       const content_array = e[2]['content'].split(' ');
       let words = [];
       for(const word of content_array){
+        let tag;
         if(word.startsWith('#')){
-          console.log(word);
-          const tag = word.slice(1);
+          const pos = word.indexOf(':')
+          console.log(word, pos);
+          if(pos > -1){
+            tag = word.slice(1, pos);
+            const value = word.slice(pos+1);
+          }else{
+            tag = word.slice(1);
+          }
           words.push(`<a href='/tag?tag=${tag}'>${word}</a>`);
         }else{
           words.push(word);
@@ -170,9 +177,18 @@ window.onload = async () => {
       const content_array = content.split(' ');
       let tags = [];
       for(const word of content_array){
+        let tag;
         if(word.startsWith('#')){
-          console.log(word);
-          tags.push(['t', word.slice(1)]);
+          const pos = word.indexOf(':')
+          console.log(word, pos);
+          if(pos > -1){
+            tag = word.slice(1, pos);
+            const value = word.slice(pos+1);
+            tags.push(['t', tag, value]);
+          }else{
+            tag = word.slice(1);
+            tags.push(['t', tag]);
+          }
         }
       }
 
