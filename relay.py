@@ -15,6 +15,7 @@ import tornado.gen
 import tornado.escape
 import tornado.websocket
 
+import human
 
 db_conn = rocksdb.DB('test.db', rocksdb.Options(create_if_missing=True))
 
@@ -160,10 +161,14 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
         elif seq[0] == 'CLOSE':
             pass
 
-
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('static/index.html')
+        self.redirect('/contributions')
+
+
+class TimelineHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('static/timeline.html')
 
 class TweetHandler(tornado.web.RequestHandler):
     def get(self):
@@ -216,10 +221,14 @@ class Application(tornado.web.Application):
                 (r"/tweet", TweetHandler),
                 (r"/user", UserHandler),
                 (r"/tag", TagHandler),
+                (r"/timeline", TimelineHandler),
                 (r"/api/profile", ProfileAPIHandler),
                 (r"/api/following", FollowingAPIHandler),
                 (r"/api/followed", FollowedAPIHandler),
                 (r"/api/test", TestAPIHandler),
+                (r"/contributions", human.ContributionsHandler),
+                (r"/contributors", human.ContributorsHandler),
+                (r"/dashboard", human.DashboardHandler),
                 (r"/", MainHandler),
             ]
         settings = {"debug": True}
@@ -229,7 +238,7 @@ class Application(tornado.web.Application):
 
 def main():
     server = Application()
-    server.listen(8010, '0.0.0.0')
+    server.listen(8030, '0.0.0.0')
     tornado.ioloop.IOLoop.instance().start()
 
 
