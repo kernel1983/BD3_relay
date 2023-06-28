@@ -1,3 +1,2 @@
-
-tornado
-pymysql
+eth_account
+python-dateutil
