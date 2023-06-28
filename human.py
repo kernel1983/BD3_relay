@@ -41,40 +41,30 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
 
         event_rows = db_conn.iteritems()
         event_rows.seek(b'timeline_%s' % str(until).encode('utf8'))
-        events = []
         users = {}
+        points = {}
         for event_key, event_id in event_rows:
             if not event_key.startswith(b'timeline_'):
                 break
             # print(event_key, event_id)
             event_row = db_conn.get(b'event_%s' % event_id)
             event = tornado.escape.json_decode(event_row)
-            # print(event)
-            users.setdefault(event['pubkey'], [])
-            users[event['pubkey']].append(event)
-            # rsp = ["EVENT", subscription_id, event]
-            # rsp_json = tornado.escape.json_encode(rsp)
-            # self.write_message(rsp_json)
+            qualified = 0
+            point = 0
+            for tag in event['tags']:
+                if tag[0] == 't' and tag[1] == 'lxdao':
+                    qualified += 1
+                if tag[0] == 't' and tag[1] == 'points':
+                    point = int(tag[2])
+                    qualified += 1
 
-        # for tag in tags:
-        #     print(tag)
-        #     if tag[0] == 't':
-        #         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
-        #         event_rows.seek(b'hashtag_%s' % hashed_tag.encode('utf8'))
-        #         for event_key, event_id in event_rows:
-        #             if not event_key.startswith(b'hashtag_%s' % hashed_tag.encode('utf8')):
-        #                 break
-        #             print(event_key, event_id)
-        #             event_row = db_conn.get(b'event_%s' % event_id)
-        #             event = tornado.escape.json_decode(event_row)
-        #             rsp = ["EVENT", subscription_id, event]
-        #             rsp_json = tornado.escape.json_encode(rsp)
-        #             self.write_message(rsp_json)
+            if qualified == 2:
+                print(event)
+                users.setdefault(event['pubkey'], [])
+                users[event['pubkey']].append(event)
 
+                points.setdefault(event['pubkey'], 0)
+                points[event['pubkey']] += point
 
-        # rsp = ["EOSE", subscription_id]
-        # rsp_json = tornado.escape.json_encode(rsp)
-        # self.write_message(rsp_json)
-
-        self.finish({'users': users})
+        self.finish({'users': users, 'points': points})
 
