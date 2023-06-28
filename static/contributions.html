@@ -1,20 +1,12 @@
 <html>
 <head>
-    <title>Yestr</title>
+    <title>HumanPoW Contributions</title>
 </head>
 
 <body>
 
   <input type="button" value="Connect Metamask" id="connect_metamask_btn" />
   <span id="ethereum_address"></span>
-  <br/>
-  <br/>
-  <input type="text" id="profile_name" placeholder="Name" />
-  <br/>
-  <textarea id="profile_about" placeholder="About"></textarea>
-  <br/>
-  <input type="text" id="profile_pic_url" placeholder="Profile picture URL" />
-  <input type="button" value="Save" id="profile_save_btn" />
   <br/>
   <br/>
 
@@ -35,17 +27,6 @@
   <br/>
   <br/>
 
-  To: <span id="pm_to"></span>
-  <br/>
-  <textarea id="pm"></textarea>
-  <br/>
-  <span id="pm_event_hash_id"></span>
-  <br/>
-  <input type="button" value="Send" id="pm_sig_btn"/>
-  <br/>
-  <br/>
-  <br/>
-
   <input type="button" value="Test" id="test_btn"/>
   <br/>
 
@@ -55,9 +36,9 @@
 <script type="module">
 import { ethers } from "/static/ethers-5.6.esm.min.js";
 
-const contract_abi = [
-    'function mint(bytes memory handle) public',
-];
+// const contract_abi = [
+//     'function mint(bytes memory handle) public',
+// ];
 
 let CHAIN_ID;
 let CHAIN_NAME;
@@ -84,16 +65,6 @@ const reply_to = document.getElementById('reply_to');
 const content = document.getElementById('content');
 const content_event_json = document.getElementById('content_event_json');
 const content_sig_btn = document.getElementById('content_sig_btn');
-
-const pm_to = document.getElementById('pm_to');
-const pm = document.getElementById('pm');
-const pm_event_hash_id = document.getElementById('pm_event_hash_id');
-const pm_sig_btn = document.getElementById('pm_sig_btn');
-
-const profile_name = document.getElementById('profile_name');
-const profile_about = document.getElementById('profile_about');
-const profile_pic_url = document.getElementById('profile_pic_url');
-const profile_save_btn = document.getElementById('profile_save_btn');
 
 const test_btn = document.getElementById('test_btn');
 
@@ -185,14 +156,9 @@ window.onload = async () => {
           <button class='msg_unlike'>Unlike</button>
           <button class='msg_dislike'>Dislike</button>
           <button class='msg_undislike'>Undislike</button>
-          <button class='msg_retweet'>Retweet</button>
-          <button class='msg_reply'>Reply</button>
           <div>from <a class='user_addr' href='/user?addr=${e[2]['pubkey']}'>${e[2]['pubkey']}</a><br>
-            <button class='user_follow'>Follow</button>
-            <button class='user_unfollow'>Unfollow</button>
-            <button class='user_pm'>PM</button>
           </div>`;
-      messages.appendChild(p);
+      messages.prepend(p);
     });
 
     let event = null;
@@ -243,44 +209,6 @@ window.onload = async () => {
         content_event_json.innerText = 'empty!'
       }
     }
-
-
-    profile_save_btn.onclick = async (evt) => {
-      console.log(profile_name.value);
-      console.log(profile_about.value);
-      console.log(profile_pic_url.value);
-      const name = profile_name.value;
-      const about = profile_about.value;
-      const picture = profile_pic_url.value;
-
-      const timestamp = parseInt(Date.now()/1000);
-      const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 0, [], {name: name, about: about, picture: picture}]);
-      console.log(json);
-      const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
-
-      const metadata_event = {
-        "id": event_hash_id,
-        "pubkey": ethereum.selectedAddress,
-        "created_at": timestamp,
-        "kind": 0,
-        "tags": [],
-        "content": {name: name, about: about, picture: picture},
-      }
-
-      if (name) {
-        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
-        const sig = await ethereum.request({
-          method: "personal_sign",
-          params: [event_hash, ethereum.selectedAddress]
-        });
-        metadata_event['sig'] = sig;
-        console.log(metadata_event);
-        socket.send(JSON.stringify(['EVENT', metadata_event]));
-      }else{
-        // content_event_json.innerText = 'empty!'
-      }
-    }
-
 
     messages.addEventListener('click', async (evt) => {
       if (evt.target.className == 'user_follow'){
