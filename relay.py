@@ -3,7 +3,6 @@ import os
 import json
 import hashlib
 
-import rocksdb
 import eth_account
 
 import tornado.web
@@ -16,8 +15,8 @@ import tornado.escape
 import tornado.websocket
 
 import human
+from database import db_conn
 
-db_conn = rocksdb.DB('test.db', rocksdb.Options(create_if_missing=True))
 
 subscriptions = {}
 
@@ -161,10 +160,10 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
         elif seq[0] == 'CLOSE':
             pass
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.redirect('/contributions')
-
 
 class TimelineHandler(tornado.web.RequestHandler):
     def get(self):
@@ -226,9 +225,11 @@ class Application(tornado.web.Application):
                 (r"/api/following", FollowingAPIHandler),
                 (r"/api/followed", FollowedAPIHandler),
                 (r"/api/test", TestAPIHandler),
+
                 (r"/contributions", human.ContributionsHandler),
                 (r"/contributors", human.ContributorsHandler),
                 (r"/dashboard", human.DashboardHandler),
+                (r"/api/dashboard", human.DashboardAPIHandler),
                 (r"/", MainHandler),
             ]
         settings = {"debug": True}
