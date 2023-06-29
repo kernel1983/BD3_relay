@@ -59,8 +59,13 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
                     qualified += 1
 
             if qualified == 2:
-                # print(event)
                 users.setdefault(event['pubkey'], {})
+                profile_json = db_conn.get(b'profile_%s' % (event['pubkey'].encode('utf8')))
+                print(profile_json)
+                profile = tornado.escape.json_decode(profile_json)
+                if profile:
+                    users[event['pubkey']]['profile'] = profile
+
                 users[event['pubkey']].setdefault('points', 0)
                 users[event['pubkey']]['points'] += point
 
