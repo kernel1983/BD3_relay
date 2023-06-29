@@ -66,5 +66,6 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
                 points.setdefault(event['pubkey'], 0)
                 points[event['pubkey']] += point
 
+        self.add_header('access-control-allow-origin', '*')
         self.finish({'users': users, 'points': points})
 

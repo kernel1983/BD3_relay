@@ -133,6 +133,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             print(sender)
 
             if kind == 0:
+                print('addr', addr)
                 db_conn.put(b'profile_%s' % (addr.encode('utf8')), tornado.escape.json_encode(content).encode('utf8'))
 
             elif kind == 1:
@@ -184,11 +185,20 @@ class TagHandler(tornado.web.RequestHandler):
         tag = self.get_argument('tag')
         self.render('static/tag.html')
 
+class ProfileHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('static/profile.html')
+
 class ProfileAPIHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
-        self.finish(tornado.escape.json_decode(content))
+        self.add_header('access-control-allow-origin', '*')
+        print(content)
+        if content:
+            self.finish(tornado.escape.json_decode(content))
+        else:
+            self.finish({})
 
 class FollowingAPIHandler(tornado.web.RequestHandler):
     def get(self):
@@ -221,9 +231,10 @@ class Application(tornado.web.Application):
                 (r"/user", UserHandler),
                 (r"/tag", TagHandler),
                 (r"/timeline", TimelineHandler),
+                (r"/profile", ProfileHandler),
                 (r"/api/profile", ProfileAPIHandler),
-                (r"/api/following", FollowingAPIHandler),
-                (r"/api/followed", FollowedAPIHandler),
+                # (r"/api/following", FollowingAPIHandler),
+                # (r"/api/followed", FollowedAPIHandler),
                 (r"/api/test", TestAPIHandler),
 
                 (r"/contributions", human.ContributionsHandler),
