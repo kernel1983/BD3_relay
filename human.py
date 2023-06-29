@@ -42,7 +42,7 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
         event_rows = db_conn.iteritems()
         event_rows.seek(b'timeline_%s' % str(until).encode('utf8'))
         users = {}
-        points = {}
+        total = 0
         for event_key, event_id in event_rows:
             if not event_key.startswith(b'timeline_'):
                 break
@@ -59,13 +59,13 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
                     qualified += 1
 
             if qualified == 2:
-                print(event)
-                users.setdefault(event['pubkey'], [])
-                users[event['pubkey']].append(event)
+                # print(event)
+                users.setdefault(event['pubkey'], {})
+                users[event['pubkey']].setdefault('points', 0)
+                users[event['pubkey']]['points'] += point
 
-                points.setdefault(event['pubkey'], 0)
-                points[event['pubkey']] += point
+                total += point
 
         self.add_header('access-control-allow-origin', '*')
-        self.finish({'users': users, 'points': points})
+        self.finish({'users': users, 'total': total})
 
