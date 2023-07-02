@@ -37,8 +37,16 @@ class ContributorsAPIHandler(tornado.web.RequestHandler):
             if not address_key.startswith(b'DAO_lxdao_'):
                 break
 
-            address = address_key.decode('utf8').replace('DAO_lxdao_', '')
-            users[address] = {}
+            addr = address_key.decode('utf8').replace('DAO_lxdao_', '').lower()
+            print(addr, b'profile_%s' % (addr.encode('utf8')))
+            profile_json = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
+            print(profile_json)
+            if profile_json:
+                profile = tornado.escape.json_decode(profile_json)
+
+                users[addr] = profile
+            else:
+                users[addr] = {}
 
         self.finish({'users': users})
 

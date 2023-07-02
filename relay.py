@@ -108,7 +108,8 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                     event_row = db_conn.get(b'event_%s' % event_id)
                     event = tornado.escape.json_decode(event_row)
                     if event['kind'] == 1:
-                        profile_json = db_conn.get(b'profile_%s' % (event['pubkey'].encode('utf8')))
+                        addr = event['pubkey'].lower()
+                        profile_json = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
                         # print(profile_json)
                         if profile_json:
                             profile = tornado.escape.json_decode(profile_json)
