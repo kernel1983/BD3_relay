@@ -28,6 +28,20 @@ class DashboardHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/dashboard.html')
 
+class ContributorsAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        address_rows = db_conn.iteritems()
+        address_rows.seek(b'DAO_lxdao_')
+        users = {}
+        for address_key, _ in address_rows:
+            if not address_key.startswith(b'DAO_lxdao_'):
+                break
+
+            address = address_key.decode('utf8').replace('DAO_lxdao_', '')
+            users[address] = {}
+
+        self.finish({'users': users})
+
 class DashboardAPIHandler(tornado.web.RequestHandler):
     def get(self):
         now = datetime.datetime.now()

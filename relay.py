@@ -107,6 +107,13 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                     print(event_key, event_id)
                     event_row = db_conn.get(b'event_%s' % event_id)
                     event = tornado.escape.json_decode(event_row)
+                    if event['kind'] == 1:
+                        profile_json = db_conn.get(b'profile_%s' % (event['pubkey'].encode('utf8')))
+                        # print(profile_json)
+                        if profile_json:
+                            profile = tornado.escape.json_decode(profile_json)
+                            event['profile'] = profile
+
                     rsp = ["EVENT", subscription_id, event]
                     rsp_json = tornado.escape.json_encode(rsp)
                     self.write_message(rsp_json)
@@ -238,6 +245,7 @@ class Application(tornado.web.Application):
                 (r"/api/test", TestAPIHandler),
 
                 (r"/contributions", human.ContributionsHandler),
+                (r"/api/contributors", human.ContributorsAPIHandler),
                 (r"/contributors", human.ContributorsHandler),
                 (r"/dashboard", human.DashboardHandler),
                 (r"/api/dashboard", human.DashboardAPIHandler),
