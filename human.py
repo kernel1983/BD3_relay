@@ -11,7 +11,7 @@ import tornado.gen
 import tornado.escape
 import tornado.websocket
 
-from database import db_conn
+import database
 
 
 class ContributionsHandler(tornado.web.RequestHandler):
@@ -30,6 +30,7 @@ class DashboardHandler(tornado.web.RequestHandler):
 
 class ContributorsAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        db_conn = database.get_conn()
         address_rows = db_conn.iteritems()
         address_rows.seek(b'DAO_lxdao_')
         users = {}
@@ -52,6 +53,7 @@ class ContributorsAPIHandler(tornado.web.RequestHandler):
 
 class DashboardAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        db_conn = database.get_conn()
         now = datetime.datetime.now()
         this_month = datetime.datetime(now.year, now.month, 1)
         print(this_month, this_month.timestamp())

@@ -15,7 +15,7 @@ import tornado.escape
 import tornado.websocket
 
 import human
-from database import db_conn
+import database
 
 
 subscriptions = {}
@@ -42,6 +42,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
 
     @tornado.gen.coroutine
     def on_message(self, message):
+        db_conn = database.get_conn()
         seq = tornado.escape.json_decode(message)
         print("RelayHandler", seq)
 
@@ -130,7 +131,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             kind = seq[1]['kind']
             tags = seq[1]['tags']
             content = seq[1]['content']
-            # print(content)
+            print(content)
             sig = seq[1]['sig']
             data = tornado.escape.json_encode(seq[1])
 
@@ -141,7 +142,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             print(sender)
 
             if kind == 0:
-                print('addr', addr)
+                print('addr', addr, content)
                 db_conn.put(b'profile_%s' % (addr.encode('utf8')), tornado.escape.json_encode(content).encode('utf8'))
 
             elif kind == 1:
@@ -199,6 +200,7 @@ class ProfileHandler(tornado.web.RequestHandler):
 
 class ProfileAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
         self.add_header('access-control-allow-origin', '*')
@@ -210,12 +212,14 @@ class ProfileAPIHandler(tornado.web.RequestHandler):
 
 class FollowingAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
         self.finish(tornado.escape.json_decode(content))
 
 class FollowedAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
         self.finish(tornado.escape.json_decode(content))
