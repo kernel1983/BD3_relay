@@ -33,7 +33,7 @@ class ContributorsAPIHandler(tornado.web.RequestHandler):
         db_conn = database.get_conn()
         address_rows = db_conn.iteritems()
         address_rows.seek(b'DAO_lxdao_')
-        users = {}
+        users = []
         for address_key, _ in address_rows:
             if not address_key.startswith(b'DAO_lxdao_'):
                 break
@@ -44,10 +44,10 @@ class ContributorsAPIHandler(tornado.web.RequestHandler):
             print(profile_json)
             if profile_json:
                 profile = tornado.escape.json_decode(profile_json)
-
-                users[addr] = profile
+                profile['addr'] = addr
+                users.append(profile)
             else:
-                users[addr] = {}
+                users.append({'addr': addr})
 
         self.finish({'users': users})
 
@@ -96,6 +96,11 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
 
                 total += point
 
+        users_list = []
+        for k, v in users.items():
+            v['addr'] = k
+            users_list.append(v)
+
         self.add_header('access-control-allow-origin', '*')
-        self.finish({'users': users, 'total': total})
+        self.finish({'users': users_list, 'total': total})
 
