@@ -153,11 +153,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
                         db_conn.put(b'hashtag_%s_%s' % (hashed_tag.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
-            db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
-            db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
-            db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
-
-            if kind == 3:
+            elif kind == 3:
                 tags = seq[1]['tags']
                 for tag in tags:
                     if tag[0] == 'follow':
@@ -166,6 +162,22 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                     elif tag[0] == 'unfollow':
                         print('unfollow', tag)
 
+                    elif tag[0] == 'like':
+                        print('like', tag)
+
+                    elif tag[0] == 'unlike':
+                        print('unlike', tag)
+
+                    elif tag[0] == 'dislike':
+                        print('dislike', tag)
+
+                    elif tag[0] == 'undislike':
+                        print('undislike', tag)
+
+
+            db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
+            db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
+            db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
 
         elif seq[0] == 'CLOSE':
             pass

@@ -255,6 +255,147 @@ window.onload = async () => {
         console.log(follow_event);
         socket.send(JSON.stringify(['EVENT', follow_event]));
 
+      } else if (evt.target.className == 'user_unfollow'){
+        const user_addr = evt.target.parentNode.querySelector('.user_addr');
+        console.log(user_addr.innerText);
+
+        const timestamp = parseInt(Date.now()/1000);
+        const tags = [['follow', user_addr.innerText, '', '']];
+        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
+        console.log(json);
+        const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
+
+        const unfollow_event = {
+          "id": event_hash,
+          "pubkey": ethereum.selectedAddress,
+          "created_at": timestamp,
+          "kind": 3,
+          "tags": tags,
+          "content": '',
+        }
+
+        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+        const sig = await ethereum.request({
+          method: "personal_sign",
+          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+        });
+        follow_event['sig'] = sig;
+        console.log(unfollow_event);
+        socket.send(JSON.stringify(['EVENT', unfollow_event]));
+
+      } else if (evt.target.className == 'msg_like'){
+        const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
+        console.log(msg_event_id.innerText);
+
+        const timestamp = parseInt(Date.now()/1000);
+        const tags = [['like', msg_event_id.innerText]];
+        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
+        console.log(json);
+        const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
+
+        const like_event = {
+          "id": event_hash,
+          "pubkey": ethereum.selectedAddress,
+          "created_at": timestamp,
+          "kind": 3,
+          "tags": tags,
+          "content": '',
+        }
+
+        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+        const sig = await ethereum.request({
+          method: "personal_sign",
+          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+        });
+        like_event['sig'] = sig;
+        console.log(like_event);
+        socket.send(JSON.stringify(['EVENT', like_event]));
+
+      } else if (evt.target.className == 'msg_unlike'){
+        const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
+        console.log(msg_event_id.innerText);
+
+        const timestamp = parseInt(Date.now()/1000);
+        const tags = [['unlike', msg_event_id.innerText]];
+        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
+        console.log(json);
+        const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
+
+        const unlike_event = {
+          "id": event_hash,
+          "pubkey": ethereum.selectedAddress,
+          "created_at": timestamp,
+          "kind": 3,
+          "tags": tags,
+          "content": '',
+        }
+
+        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+        const sig = await ethereum.request({
+          method: "personal_sign",
+          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+        });
+        unlike_event['sig'] = sig;
+        console.log(unlike_event);
+        socket.send(JSON.stringify(['EVENT', unlike_event]));
+
+      } else if (evt.target.className == 'msg_dislike'){
+        const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
+        console.log(msg_event_id.innerText);
+
+        const timestamp = parseInt(Date.now()/1000);
+        const tags = [['dislike', msg_event_id.innerText]];
+        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
+        console.log(json);
+        const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
+
+        const dislike_event = {
+          "id": event_hash,
+          "pubkey": ethereum.selectedAddress,
+          "created_at": timestamp,
+          "kind": 3,
+          "tags": tags,
+          "content": '',
+        }
+
+        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+        const sig = await ethereum.request({
+          method: "personal_sign",
+          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+        });
+        dislike_event['sig'] = sig;
+        console.log(dislike_event);
+        socket.send(JSON.stringify(['EVENT', dislike_event]));
+
+      } else if (evt.target.className == 'msg_undislike'){
+        const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
+        console.log(msg_event_id.innerText);
+
+        const timestamp = parseInt(Date.now()/1000);
+        const tags = [['undislike', msg_event_id.innerText]];
+        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
+        console.log(json);
+        const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));
+
+        const undislike_event = {
+          "id": event_hash,
+          "pubkey": ethereum.selectedAddress,
+          "created_at": timestamp,
+          "kind": 3,
+          "tags": tags,
+          "content": '',
+        }
+
+        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+        const sig = await ethereum.request({
+          method: "personal_sign",
+          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+        });
+        undislike_event['sig'] = sig;
+        console.log(undislike_event);
+        socket.send(JSON.stringify(['EVENT', undislike_event]));
+
+
       } else if (evt.target.className == 'user_pm'){
         const user_addr = evt.target.parentNode.querySelector('.user_addr');
         console.log(user_addr.innerText);
