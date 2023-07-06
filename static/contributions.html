@@ -126,7 +126,7 @@ window.onload = async () => {
     // Connection opened
     socket.addEventListener("open", (event) => {
       const subscription_id = Math.random()*100000000000000000;
-      socket.send(JSON.stringify(["REQ", subscription_id, {}]));
+      socket.send(JSON.stringify(['REQ', subscription_id, {}]));
     });
 
     // Listen for messages

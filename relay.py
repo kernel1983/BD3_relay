@@ -153,6 +153,9 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
                         db_conn.put(b'hashtag_%s_%s' % (hashed_tag.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
+                db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
+                db_conn.put(b'tweet_%s' % (event_id.encode('utf8'), ), tornado.escape.json_encode({}))
+
             elif kind == 3:
                 tags = seq[1]['tags']
                 for tag in tags:
@@ -164,20 +167,33 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
 
                     elif tag[0] == 'like':
                         print('like', tag)
-
-                    elif tag[0] == 'unlike':
-                        print('unlike', tag)
+                        tweet_event_id = tag[1]
+                        tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
+                        tweet = tornado.escape.json_decode(tweet_json)
+                        print('tweet', tweet)
+                        tweet.setdefault('likes', [])
+                        tweet.setdefault('dislikes', [])
 
                     elif tag[0] == 'dislike':
                         print('dislike', tag)
+                        tweet_event_id = tag[1]
+                        tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
+                        tweet = tornado.escape.json_decode(tweet_json)
+                        print('tweet', tweet)
+                        tweet.setdefault('likes', [])
+                        tweet.setdefault('dislikes', [])
 
-                    elif tag[0] == 'undislike':
-                        print('undislike', tag)
-
+                    elif tag[0] == 'unlike':
+                        print('unlike', tag)
+                        tweet_event_id = tag[1]
+                        tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
+                        tweet = tornado.escape.json_decode(tweet_json)
+                        print('tweet', tweet)
+                        tweet.setdefault('likes', [])
+                        tweet.setdefault('dislikes', [])
 
             db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
             db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
-            db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
 
         elif seq[0] == 'CLOSE':
             pass
