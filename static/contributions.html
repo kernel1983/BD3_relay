@@ -35,27 +35,28 @@
 
 <script type="module">
 import { ethers } from "/static/ethers-5.6.esm.min.js";
+import { CHAIN_ID, CHAIN_NAME, RPC_URL, RELAY_URL} from "/static/config.js";
 
 // const contract_abi = [
 //     'function mint(bytes memory handle) public',
 // ];
 
-let CHAIN_ID;
-let CHAIN_NAME;
-let RPC_URL;
-let RELAY_URL;
+// let CHAIN_ID;
+// let CHAIN_NAME;
+// let RPC_URL;
+// let RELAY_URL;
 
-if(window.location.hostname == 'humanpow.bitpow.org'){
-  CHAIN_ID = '0xd07';
-  CHAIN_NAME = 'BitPoW testnet1';
-  RPC_URL = 'https://testnet1.bitpow.org';
-  RELAY_URL = "wss://humanpow.bitpow.org/relay";
-}else{
-  CHAIN_ID = '0x208';
-  CHAIN_NAME = 'BitPoW local';
-  RPC_URL = "http://192.168.1.9:9001";
-  RELAY_URL = "ws://192.168.1.9:8030/relay";
-}
+// if(window.location.hostname == 'humanpow.bitpow.org'){
+//   CHAIN_ID = '0xd07';
+//   CHAIN_NAME = 'BitPoW testnet1';
+//   RPC_URL = 'https://testnet1.bitpow.org';
+//   RELAY_URL = "wss://humanpow.bitpow.org/relay";
+// }else{
+//   CHAIN_ID = '0x208';
+//   CHAIN_NAME = 'BitPoW local';
+//   RPC_URL = "http://192.168.1.9:9001";
+//   RELAY_URL = "ws://192.168.1.9:8030/relay";
+// }
 
 // const contract_address = "";
 // const erc20 = new ethers.Contract(address, abi, provider);

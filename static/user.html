@@ -42,6 +42,7 @@
 
 <script type="module">
 import { ethers } from "/static/ethers-5.6.esm.min.js";
+import { CHAIN_ID, CHAIN_NAME, RPC_URL, RELAY_URL} from "/static/config.js";
 
 let params = new URLSearchParams(window.location.search);
 for (let p of params.entries()) {
@@ -49,25 +50,6 @@ for (let p of params.entries()) {
 }
 const user_id = params.get('addr');
 
-let CHAIN_ID;
-let CHAIN_NAME;
-let RPC_URL;
-let RELAY_URL;
-
-if(window.location.hostname == 'humanpow.bitpow.org'){
-  CHAIN_ID = '0xd07';
-  CHAIN_NAME = 'BitPoW testnet1';
-  RPC_URL = 'https://testnet1.bitpow.org';
-  RELAY_URL = "wss://humanpow.bitpow.org/relay";
-}else{
-  CHAIN_ID = '0x208';
-  CHAIN_NAME = 'BitPoW local';
-  RPC_URL = "http://192.168.1.9:9001";
-  RELAY_URL = "ws://192.168.1.9:8030/relay";
-}
-CHAIN_ID = '0x1';
-CHAIN_NAME = 'Ethereum Mainnet';
-RPC_URL = "https://rpc.particle.network/evm-chain";
 
 const messages = document.getElementById('messages');
 const reply_to = document.getElementById('reply_to');
