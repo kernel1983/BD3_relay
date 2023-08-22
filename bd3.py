@@ -104,6 +104,25 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
         self.add_header('access-control-allow-origin', '*')
         self.finish({'users': users_list, 'total': total})
 
+
+class UsersAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        db_conn = database.get_conn()
+        event_rows = db_conn.iteritems()
+        event_rows.seek(b'profile_')
+        results = {}
+        for key, profile_json in event_rows:
+            if not key.startswith(b'profile_'):
+                break
+            # print(key, profile_json)
+            profile = tornado.escape.json_decode(profile_json)
+            if 'role' in profile and profile['role'] == 'user':
+                results[key.decode('utf8').replace('profile_', '')] = profile
+
+        self.add_header('access-control-allow-origin', '*')
+        self.finish(results)
+
+
 class ProjectsAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
@@ -129,6 +148,10 @@ class AttestEventAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
 
+class UsersHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('static/users.html')
+
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
@@ -146,10 +169,6 @@ class NeedHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/need.html')
 
-class UsersHndler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('static/users.html')
-
 class ProjectsHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/projects.html')
@@ -166,3 +185,4 @@ class ProjectHandler(tornado.web.RequestHandler):
                 self.redirect('/user?addr=%s' % addr)
 
         self.render('static/project.html')
+

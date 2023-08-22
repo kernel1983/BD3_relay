@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BD3 Projects</title>
+  <title>BD3 Users</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/bulma/bulma-rtl.css">
 <style>
-.project{
+.user{
     height: 300px;
     width: 230px;
     border-radius: 5px;
@@ -79,8 +79,8 @@
 
   <section class="section">
     <div class="container">
-      <h2 class="title">Projects</h2>
-      <div id="projects">
+      <h2 class="title">Users</h2>
+      <div id="users">
       </div>
     </div>
   </section>
@@ -99,7 +99,7 @@ import { CHAIN_ID, CHAIN_NAME, RPC_URL, RELAY_URL} from "/static/config.js";
 // const user_id = params.get('addr');
 
 
-const projects = document.getElementById('projects');
+const users = document.getElementById('users');
 window.onload = async () => {
   if (typeof window.ethereum !== 'undefined') {
     console.log('MetaMask is installed!');
@@ -141,12 +141,12 @@ window.onload = async () => {
       });
     }
 
-    const response = await fetch(`/api/projects`);
+    const response = await fetch(`/api/users`);
     const data = await response.json();
     console.log(data);
     for(var i in data){
-        projects.innerHTML += `<div class='project'>
-            <a href='/project?addr=${i}'>${data[i]['name']}</a>
+        users.innerHTML += `<div class='user'>
+            <a href='/user?addr=${i}'>${data[i]['name']}</a>
         </div>`;
     }
 
