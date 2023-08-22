@@ -14,7 +14,7 @@ import tornado.gen
 import tornado.escape
 import tornado.websocket
 
-import human
+import bd3
 import database
 
 
@@ -107,6 +107,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                         break
                     print(event_key, event_id)
                     event_row = db_conn.get(b'event_%s' % event_id)
+                    print(event_row)
                     event = tornado.escape.json_decode(event_row)
                     if event['kind'] == 1:
                         addr = event['pubkey'].lower()
@@ -154,7 +155,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                         db_conn.put(b'hashtag_%s_%s' % (hashed_tag.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
                 db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
-                db_conn.put(b'tweet_%s' % (event_id.encode('utf8'), ), tornado.escape.json_encode({}))
+                db_conn.put(b'tweet_%s' % (event_id.encode('utf8'), ), tornado.escape.json_encode({}).encode('utf8'))
 
             elif kind == 3:
                 tags = seq[1]['tags']
@@ -192,6 +193,12 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                         tweet.setdefault('likes', [])
                         tweet.setdefault('dislikes', [])
 
+                    elif tag[0] == 'attest':
+                        print('attest', tag)
+                        attest_type = tag[1]
+                        attest_data = tag[2]
+
+            print('data', data)
             db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
             db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
@@ -201,7 +208,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.redirect('/contributions')
+        self.redirect('/profile')
 
 class TimelineHandler(tornado.web.RequestHandler):
     def get(self):
@@ -211,11 +218,6 @@ class TweetHandler(tornado.web.RequestHandler):
     def get(self):
         event = self.get_argument('event')
         self.render('static/tweet.html')
-
-class UserHandler(tornado.web.RequestHandler):
-    def get(self):
-        addr = self.get_argument('addr')
-        self.render('static/user.html')
 
 class TagHandler(tornado.web.RequestHandler):
     def get(self):
@@ -230,7 +232,7 @@ class ProfileAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
         addr = self.get_argument('addr')
-        content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
+        content = db_conn.get(b'profile_%s' % (addr.lower().encode('utf8')))
         self.add_header('access-control-allow-origin', '*')
         print(content)
         if content:
@@ -252,6 +254,15 @@ class FollowedAPIHandler(tornado.web.RequestHandler):
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
         self.finish(tornado.escape.json_decode(content))
 
+class AttestSchemasAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.finish({'schemas':
+            [ ['I meet offline with', '$user'],
+              ['$user', 'is the', '$role', 'of', '$project'],
+              ['$user', 'is the expert of', '$skill'], ]
+        })
+
+
 class TestAPIHandler(tornado.web.RequestHandler):
     def post(self):
         sig = self.request.body
@@ -268,7 +279,6 @@ class Application(tornado.web.Application):
                 (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": './static/'}),
                 (r"/relay", RelayHandler),
                 (r"/tweet", TweetHandler),
-                (r"/user", UserHandler),
                 (r"/tag", TagHandler),
                 (r"/timeline", TimelineHandler),
                 (r"/profile", ProfileHandler),
@@ -277,11 +287,20 @@ class Application(tornado.web.Application):
                 # (r"/api/followed", FollowedAPIHandler),
                 (r"/api/test", TestAPIHandler),
 
-                (r"/contributions", human.ContributionsHandler),
-                (r"/api/contributors", human.ContributorsAPIHandler),
-                (r"/contributors", human.ContributorsHandler),
-                (r"/dashboard", human.DashboardHandler),
-                (r"/api/dashboard", human.DashboardAPIHandler),
+                # (r"/contributions", bd3.ContributionsHandler),
+                # (r"/api/contributors", bd3.ContributorsAPIHandler),
+                # (r"/contributors", bd3.ContributorsHandler),
+                # (r"/dashboard", bd3.DashboardHandler),
+                # (r"/api/dashboard", bd3.DashboardAPIHandler),
+
+                (r"/user", bd3.UserHandler),
+                (r"/need", bd3.NeedHandler),
+                (r"/project", bd3.ProjectHandler),
+                (r"/projects", bd3.ProjectsHandler),
+                (r"/api/projects", bd3.ProjectsAPIHandler),
+                (r"/api/attest_user", bd3.AttestUserAPIHandler),
+                (r"/api/attest_event", bd3.AttestEventAPIHandler),
+                (r"/api/attest_schemas", AttestSchemasAPIHandler),
                 (r"/", MainHandler),
             ]
         settings = {"debug": True}
@@ -291,7 +310,7 @@ class Application(tornado.web.Application):
 
 def main():
     server = Application()
-    server.listen(8030, '0.0.0.0')
+    server.listen(8053, '0.0.0.0')
     tornado.ioloop.IOLoop.instance().start()
 
 

@@ -1,120 +1,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BD3 User</title>
+  <title>BD3 Project</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/bulma/bulma-rtl.min.css">
 </head>
 
 <body>
 
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="https://web3bd.network">
-        <span style="font-size: 24px;">BD3</span>
-      </a>
-
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start">
-        <!-- <a class="navbar-item">
-          Home
-        </a>
-
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">
-            More
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="https://web3bd.network">
+            <span style="font-size: 24px;">BD3</span>
           </a>
 
-          <div class="navbar-dropdown">
-            <a class="navbar-item">
-              About
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <!-- <a class="navbar-item">
+              Home
             </a>
-            <a class="navbar-item">
-              Jobs
-            </a>
-            <a class="navbar-item">
-              Contact
-            </a>
-            <hr class="navbar-divider">
-            <a class="navbar-item">
-              Report an issue
-            </a>
+
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                More
+              </a>
+
+              <div class="navbar-dropdown">
+                <a class="navbar-item">
+                  About
+                </a>
+                <a class="navbar-item">
+                  Jobs
+                </a>
+                <a class="navbar-item">
+                  Contact
+                </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item">
+                  Report an issue
+                </a>
+              </div>
+            </div> -->
           </div>
-        </div> -->
-      </div>
 
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <!-- <a class="button is-primary">
-              <strong>Sign up</strong>
-            </a>
-            <a class="button is-light">
-              Log in
-            </a> -->
-            <input type="button" value="Connect Metamask" id="connect_metamask_btn" />
-            <span id="ethereum_address"></span>
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <!-- <a class="button is-primary">
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light">
+                  Log in
+                </a> -->
+                <input type="button" value="Connect Metamask" id="connect_metamask_btn" />
+                <span id="ethereum_address"></span>
+            </div>
+            </div>
+          </div>
         </div>
+      </nav>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="title">Project</h2>
+
+          <span id="profile_name" placeholder="Name"></span>
+          <br/>
+          <br/>
+          <div id="profile_about" placeholder="about me"></div>
+          <br/>
+          <span id="profile_pic_url" placeholder="profile pic or logo url"></span>
+          <br/>
+          <span id="video_url" placeholder="video url"></span>
+          <br/>
+          <span id="website_url" placeholder="website url"></span>
+          <br/>
+          <span id="twitter_handle" placeholder="twitter handle"></span>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+
+          Attest To: <span id="attest_to"></span>
+          <br/>
+          <select id="attest_schemas">
+          </select>
+          <!-- <textarea id="pm"></textarea> -->
+          <br/>
+          <div id='attest_params'>
+          </div>
+          <span id="attest_statement"></span>
+          <br/>
+          <input type="button" value="Attest" id="attest_sig_btn"/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+
+          <div id="messages"></div>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+
         </div>
-      </div>
-    </div>
-  </nav>
+      </section>
 
-  <section class="section">
-    <div class="container">
-      <h2 class="title">User</h2>
 
-      <div id="messages"></div>
-      <br/>
-      <br/>
-      <br/>
+  <!-- Reply to: <span id="reply_to"></span>
+  <br/>
+  <textarea id="content"></textarea>
+  <br/>
+  <span id="content_event_json"></span>
+  <br/>
+  <input type="button" value="Post" id="content_sig_btn"/>
+  <br/>
+  <br/>
+  <br/>
+  <br/> -->
 
-      Reply to: <span id="reply_to"></span>
-      <br/>
-      <textarea id="content"></textarea>
-      <br/>
-      <span id="content_event_json"></span>
-      <br/>
-      <input type="button" value="Post" id="content_sig_btn"/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
 
-      Attest To: <span id="attest_to"></span>
-      <br/>
-      <select id="attest_schemas">
-      </select>
-      <!-- <textarea id="pm"></textarea> -->
-      <br/>
-      <div id='attest_params'>
-      </div>
-      <span id="attest_statement"></span>
-      <br/>
-      <input type="button" value="Attest" id="attest_sig_btn"/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-
-      PM To: <span id="pm_to"></span>
-      <br/>
-      <textarea id="pm"></textarea>
-      <br/>
-      <span id="pm_event_hash_id"></span>
-      <br/>
-      <input type="button" value="Send" id="pm_sig_btn"/>
-      <br/>
-
-    </div>
-  </section>
+  <!-- PM To: <span id="pm_to"></span>
+  <br/>
+  <textarea id="pm"></textarea>
+  <br/>
+  <span id="pm_event_hash_id"></span>
+  <br/>
+  <input type="button" value="Send" id="pm_sig_btn"/>
+  <br/> -->
 
 </body>
 
@@ -148,7 +168,7 @@ const pm = document.getElementById('pm');
 const pm_event_hash_id = document.getElementById('pm_event_hash_id');
 const pm_sig_btn = document.getElementById('pm_sig_btn');
 
-pm_to.innerText = user_id;
+// pm_to.innerText = user_id;
 attest_to.innerText = user_id;
 
 window.onload = async () => {
@@ -229,54 +249,54 @@ window.onload = async () => {
       messages.prepend(p);
     });
 
-    let event = null;
-    let event_hash_id = '';
-    let event_sig = '';
-    content.addEventListener('keyup', async (evt) => {
-      const timestamp = parseInt(Date.now()/1000);
-      const content = evt.target.value;
-      const content_array = content.split(' ');
-      let tags = [];
-      for(const word of content_array){
-        if(word.startsWith('#')){
-          console.log(word);
-          tags.push(['t', word.slice(1)]);
-        }
-      }
+    // let event = null;
+    // let event_hash_id = '';
+    // let event_sig = '';
+    // content.addEventListener('keyup', async (evt) => {
+    //   const timestamp = parseInt(Date.now()/1000);
+    //   const content = evt.target.value;
+    //   const content_array = content.split(' ');
+    //   let tags = [];
+    //   for(const word of content_array){
+    //     if(word.startsWith('#')){
+    //       console.log(word);
+    //       tags.push(['t', word.slice(1)]);
+    //     }
+    //   }
 
-      const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 1, tags, content]);
-      event_hash_id = ethers.utils.sha256(new TextEncoder().encode(json));
-      content_event_json.innerText = json;
+    //   const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 1, tags, content]);
+    //   event_hash_id = ethers.utils.sha256(new TextEncoder().encode(json));
+    //   content_event_json.innerText = json;
 
-      event = {
-        "id": event_hash_id,
-        "pubkey": ethereum.selectedAddress,
-        "created_at": timestamp,
-        "kind": 1,
-        "tags": tags,
-        "content": content,
-      }
-    });
+    //   event = {
+    //     "id": event_hash_id,
+    //     "pubkey": ethereum.selectedAddress,
+    //     "created_at": timestamp,
+    //     "kind": 1,
+    //     "tags": tags,
+    //     "content": content,
+    //   }
+    // });
 
-    content_sig_btn.onclick = async (evt) => {
-      if (event && event_hash_id) {
-        // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
-        const timestamp = event['created_at'];
-        const tags = event['tags'];
-        const content = event['content'];
-        const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 1, tags, content]);
-        // console.log(json);
-        const sig = await ethereum.request({
-          method: "personal_sign",
-          params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
-        });
-        event['sig'] = sig;
-        console.log(event);
-        socket.send(JSON.stringify(['EVENT', event]));
-      }else{
-        content_event_json.innerText = 'empty!'
-      }
-    }
+    // content_sig_btn.onclick = async (evt) => {
+    //   if (event && event_hash_id) {
+    //     // console.log(ethers.utils.hexlify(new TextEncoder().encode(content.value)));
+    //     const timestamp = event['created_at'];
+    //     const tags = event['tags'];
+    //     const content = event['content'];
+    //     const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 1, tags, content]);
+    //     // console.log(json);
+    //     const sig = await ethereum.request({
+    //       method: "personal_sign",
+    //       params: [ethers.utils.hexlify(new TextEncoder().encode(json)), ethereum.selectedAddress]
+    //     });
+    //     event['sig'] = sig;
+    //     console.log(event);
+    //     socket.send(JSON.stringify(['EVENT', event]));
+    //   }else{
+    //     content_event_json.innerText = 'empty!'
+    //   }
+    // }
 
 
     messages.addEventListener('click', async (evt) => {
@@ -308,15 +328,15 @@ window.onload = async () => {
         console.log(follow_event);
         socket.send(JSON.stringify(['EVENT', follow_event]));
 
-      } else if (evt.target.className == 'user_pm'){
-        const user_addr = evt.target.parentNode.querySelector('.user_addr');
-        console.log(user_addr.innerText);
-        pm_to.innerText = user_addr.innerText;
+    //   } else if (evt.target.className == 'user_pm'){
+    //     const user_addr = evt.target.parentNode.querySelector('.user_addr');
+    //     console.log(user_addr.innerText);
+    //     pm_to.innerText = user_addr.innerText;
 
-      } else if (evt.target.className == 'msg_reply'){
-        const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
-        console.log(msg_event_id.innerText);
-        reply_to.innerText = msg_event_id.innerText;
+    //   } else if (evt.target.className == 'msg_reply'){
+    //     const msg_event_id = evt.target.parentNode.querySelector('.msg_event_id');
+    //     console.log(msg_event_id.innerText);
+    //     reply_to.innerText = msg_event_id.innerText;
 
       }
 
@@ -418,6 +438,14 @@ window.onload = async () => {
 
     };
   }
+
+  const response = await fetch(`/api/profile?addr=${user_id}`);
+  const data = await response.json();
+  console.log(data);
+  profile_name.innerText = data['name'];
+  profile_about.innerText = data['about'];
+  profile_pic_url.innerText = data['picture'];
+
 }
 
 

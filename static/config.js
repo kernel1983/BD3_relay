@@ -3,11 +3,11 @@ let CHAIN_NAME;
 let RPC_URL;
 let RELAY_URL;
 
-if(window.location.hostname == 'humanpow.bitpow.org'){
-  RELAY_URL = "wss://humanpow.bitpow.org/relay";
+if(window.location.hostname == 'api.web3bd.network'){
+  RELAY_URL = "wss://api.web3bd.network/relay";
 
 }else{
-  RELAY_URL = "ws://192.168.1.9:8030/relay";
+  RELAY_URL = "ws://127.0.0.1:8053/relay";
 
 }
 
@@ -26,3 +26,4 @@ export {
 // export default{
 //     name: "default"
 // }
+
