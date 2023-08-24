@@ -151,6 +151,8 @@ class AttestUserAPIHandler(tornado.web.RequestHandler):
                 break
             print(attest_key, attest_value)
 
+        self.add_header('access-control-allow-origin', '*')
+
 class AttestEventAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()

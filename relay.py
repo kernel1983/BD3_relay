@@ -249,18 +249,24 @@ class ProfileAPIHandler(tornado.web.RequestHandler):
         db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.lower().encode('utf8')))
-        self.add_header('access-control-allow-origin', '*')
         print(content)
+
+        result = {
+            'errno': 0,
+            'errMsg': '',
+            'data': {}
+        }
         if content:
-            self.finish(tornado.escape.json_decode(content))
-        else:
-            self.finish({})
+            result['data'] = tornado.escape.json_decode(content)
+        self.add_header('access-control-allow-origin', '*')
+        self.finish(result)
 
 class FollowingAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
+        self.add_header('access-control-allow-origin', '*')
         self.finish(tornado.escape.json_decode(content))
 
 class FollowedAPIHandler(tornado.web.RequestHandler):
@@ -268,10 +274,12 @@ class FollowedAPIHandler(tornado.web.RequestHandler):
         db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
+        self.add_header('access-control-allow-origin', '*')
         self.finish(tornado.escape.json_decode(content))
 
 class AttestSchemasAPIHandler(tornado.web.RequestHandler):
     def get(self):
+        self.add_header('access-control-allow-origin', '*')
         self.finish({'schemas':
             [ ['I meet offline with', '$user'],
               ['$user', 'is the', '$role', 'of', '$project'],
