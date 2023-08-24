@@ -132,7 +132,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             kind = seq[1]['kind']
             tags = seq[1]['tags']
             content = seq[1]['content']
-            print(content)
+            # print(content)
             sig = seq[1]['sig']
             data = tornado.escape.json_encode(seq[1])
 
@@ -140,10 +140,11 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             message = eth_account.messages.encode_defunct(text=msg)
             # print(message)
             sender = eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:]))
-            print(sender)
+            print(sender, addr)
+            assert sender.lower() == addr
 
             if kind == 0:
-                print('addr', addr, content)
+                print('content', content)
                 db_conn.put(b'profile_%s' % (addr.encode('utf8')), tornado.escape.json_encode(content).encode('utf8'))
 
             elif kind == 1:
@@ -195,8 +196,23 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
 
                     elif tag[0] == 'attest':
                         print('attest', tag)
-                        attest_type = tag[1]
+                        attest_user = tag[1]
                         attest_data = tag[2]
+                        schemas = []
+                        for i in attest_data:
+                            print(i)
+                            if i[0] == '$' and ':' in i:
+                                p = i.index(':')
+                                print(i[:p])
+                                schemas.append(i[:p])
+                            else:
+                                schemas.append(i)
+
+                        schemas_json = json.dumps(schemas, separators=(',', ':'), ensure_ascii=False)
+                        attest_type = hashlib.sha256(schemas_json.encode('utf8')).hexdigest()
+                        print(attest_type)
+
+                        db_conn.put(('attest_%s_%s_%s' % (addr, attest_user, attest_type)).encode('utf8'), event_id.encode('utf8'))
 
             print('data', data)
             db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))

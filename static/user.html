@@ -378,15 +378,16 @@ window.onload = async () => {
       attest_statement_data = [];
       console.log(schemas['schemas'][attest_schemas.value]);
       for(var i in schemas['schemas'][attest_schemas.value]){
-        if(schemas['schemas'][attest_schemas.value][i][0] == '$'){
-          console.log(schemas['schemas'][attest_schemas.value][i]);
-          const param = document.querySelector(`[id='attest_params_${schemas['schemas'][attest_schemas.value][i]}']`);
+        const schema = schemas['schemas'][attest_schemas.value][i];
+        if(schema[0] == '$'){
+          console.log(schema);
+          const param = document.querySelector(`[id='attest_params_${schema}']`);
           console.log(param);
-          attest_statement_text += param.value + ' ';
-          attest_statement_data.push(param.value);
+          attest_statement_text += schema+':'+param.value + ' ';
+          attest_statement_data.push(schema+':'+param.value);
         }else{
-          attest_statement_text += schemas['schemas'][attest_schemas.value][i] + ' ';
-          attest_statement_data.push(schemas['schemas'][attest_schemas.value][i]);
+          attest_statement_text += schema+' ';
+          attest_statement_data.push(schema);
         }
       }
       attest_statement.innerText = attest_statement_text;
