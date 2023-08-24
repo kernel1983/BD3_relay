@@ -395,7 +395,7 @@ window.onload = async () => {
 
     attest_sig_btn.onclick = async (evt) => {
       const timestamp = parseInt(Date.now()/1000);
-      const tags = [['attest', parseInt(attest_schemas.value), attest_statement_data]];
+      const tags = [['attest', attest_to.innerText, attest_statement_data]];
       const json = JSON.stringify([0, ethereum.selectedAddress, timestamp, 3, tags, '']);
       console.log(json);
       const event_hash = ethers.utils.sha256(new TextEncoder().encode(json));

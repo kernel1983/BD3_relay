@@ -143,6 +143,13 @@ class ProjectsAPIHandler(tornado.web.RequestHandler):
 class AttestUserAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
+        addr = self.get_argument('addr')
+        attest_rows = db_conn.iteritems()
+        attest_rows.seek(('attest_%s' % addr).encode('utf8'))
+        for attest_key, attest_value in attest_rows:
+            if not attest_key.startswith(('attest_%s' % addr).encode('utf8')):
+                break
+            print(attest_key, attest_value)
 
 class AttestEventAPIHandler(tornado.web.RequestHandler):
     def get(self):

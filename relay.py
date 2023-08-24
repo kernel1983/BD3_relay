@@ -278,7 +278,6 @@ class AttestSchemasAPIHandler(tornado.web.RequestHandler):
               ['$user', 'is the expert of', '$skill'], ]
         })
 
-
 class TestAPIHandler(tornado.web.RequestHandler):
     def post(self):
         sig = self.request.body
