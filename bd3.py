@@ -105,7 +105,7 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
         self.finish({'users': users_list, 'total': total})
 
 
-class UsersAPIHandler(tornado.web.RequestHandler):
+class PersonsAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
         event_rows = db_conn.iteritems()
@@ -116,14 +116,14 @@ class UsersAPIHandler(tornado.web.RequestHandler):
                 break
             # print(key, profile_json)
             profile = tornado.escape.json_decode(profile_json)
-            if 'role' in profile and profile['role'] == 'user':
+            if 'role' in profile and profile['role'] == 'person':
                 results[key.decode('utf8').replace('profile_', '')] = profile
 
         self.add_header('access-control-allow-origin', '*')
         self.finish(results)
 
 
-class ProjectsAPIHandler(tornado.web.RequestHandler):
+class OrganzationsAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
         event_rows = db_conn.iteritems()
@@ -134,7 +134,7 @@ class ProjectsAPIHandler(tornado.web.RequestHandler):
                 break
             # print(key, profile_json)
             profile = tornado.escape.json_decode(profile_json)
-            if 'role' in profile and profile['role'] == 'project':
+            if 'role' in profile and profile['role'] == 'organization':
                 results[key.decode('utf8').replace('profile_', '')] = profile
 
         self.add_header('access-control-allow-origin', '*')
@@ -163,11 +163,11 @@ class AttestEventAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
 
-class UsersHandler(tornado.web.RequestHandler):
+class PeopleHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('static/users.html')
+        self.render('static/people.html')
 
-class UserHandler(tornado.web.RequestHandler):
+class PersonHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
         db_conn = database.get_conn()
@@ -175,20 +175,20 @@ class UserHandler(tornado.web.RequestHandler):
         print(profile_json)
         if profile_json:
             profile = tornado.escape.json_decode(profile_json)
-            if 'role' in profile and profile['role'] == 'project':
-                self.redirect('/project?addr=%s' % addr)
+            if 'role' in profile and profile['role'] == 'organization':
+                self.redirect('/organization?addr=%s' % addr)
 
-        self.render('static/user.html')
+        self.render('static/person.html')
 
 class NeedHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/need.html')
 
-class ProjectsHandler(tornado.web.RequestHandler):
+class OrganzationsHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('static/projects.html')
+        self.render('static/organizations.html')
 
-class ProjectHandler(tornado.web.RequestHandler):
+class OrganzationHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
         db_conn = database.get_conn()
@@ -196,8 +196,8 @@ class ProjectHandler(tornado.web.RequestHandler):
         print(profile_json)
         if profile_json:
             profile = tornado.escape.json_decode(profile_json)
-            if 'role' in profile and profile['role'] == 'user':
-                self.redirect('/user?addr=%s' % addr)
+            if 'role' in profile and profile['role'] == 'person':
+                self.redirect('/person?addr=%s' % addr)
 
-        self.render('static/project.html')
+        self.render('static/organization.html')
 

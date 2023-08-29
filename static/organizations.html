@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BD3 Projects</title>
+  <title>BD3 Organzations</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/bulma/bulma-rtl.css">
 <style>
-.project{
+.organization{
     height: 300px;
     width: 230px;
     border-radius: 5px;
@@ -79,8 +79,8 @@
 
   <section class="section">
     <div class="container">
-      <h2 class="title">Projects</h2>
-      <div id="projects">
+      <h2 class="title">Organzations</h2>
+      <div id="organizations">
       </div>
     </div>
   </section>
@@ -99,7 +99,7 @@ import { CHAIN_ID, CHAIN_NAME, RPC_URL, RELAY_URL, API_URL } from "/static/confi
 // const user_id = params.get('addr');
 
 
-const projects = document.getElementById('projects');
+const organizations = document.getElementById('organizations');
 window.onload = async () => {
   if (typeof window.ethereum !== 'undefined') {
     console.log('MetaMask is installed!');
@@ -141,12 +141,12 @@ window.onload = async () => {
       });
     }
 
-    const response = await fetch(`/api/projects`);
+    const response = await fetch(`/api/organizations`);
     const data = await response.json();
     console.log(data);
     for(var i in data){
-        projects.innerHTML += `<div class='project'>
-            <a href='/project?addr=${i}'>${data[i]['name']}</a>
+        organizations.innerHTML += `<div class='organization'>
+            <a href='/organization?addr=${i}'>${data[i]['name']}</a>
         </div>`;
     }
 

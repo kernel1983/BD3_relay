@@ -75,8 +75,8 @@
         <br/>
         <input type="text" id="profile_name" placeholder="Name"/>
         <br/>
-        <input type="radio" name="profile_role" value="user" /> individual
-        <input type="radio" name="profile_role" value="project" /> project
+        <input type="radio" name="profile_role" value="person" /> individual
+        <input type="radio" name="profile_role" value="organization" /> organization
         <br/>
         <textarea id="profile_about" placeholder="about me"></textarea>
         <br/>
@@ -165,11 +165,11 @@ window.onload = async () => {
     profile_name.value = data['name'];
     profile_about.innerText = data['about'];
     profile_pic_url.value = data['picture'];
-    console.log(document.querySelector('input[name="profile_role"][value="project"]'));
-    if(data['role'] == 'project'){
-      document.querySelector('input[name="profile_role"][value="project"]').checked = true;
+    console.log(document.querySelector('input[name="profile_role"][value="organization"]'));
+    if(data['role'] == 'organization'){
+      document.querySelector('input[name="profile_role"][value="organization"]').checked = true;
     }else{
-      document.querySelector('input[name="profile_role"][value="user"]').checked = true;
+      document.querySelector('input[name="profile_role"][value="person"]').checked = true;
     }
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -195,7 +195,7 @@ window.onload = async () => {
       const name = profile_name.value;
       const about = profile_about.value;
       const role = document.querySelector('input[name="profile_role"]:checked');
-      var role_value = 'user';
+      var role_value = 'person';
       if(role){
         role_value = role.value;
       }

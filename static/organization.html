@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BD3 Project</title>
+  <title>BD3 Organzation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/bulma/bulma-rtl.css">
 </head>
@@ -69,7 +69,7 @@
 
       <section class="section">
         <div class="container">
-          <h2 class="title">Project</h2>
+          <h2 class="title">Organzation</h2>
 
           <span id="profile_name" placeholder="Name"></span>
           <br/>
@@ -241,7 +241,7 @@ window.onload = async () => {
           <button class='msg_undislike'>Undislike</button>
           <button class='msg_retweet'>Retweet</button>
           <button class='msg_reply'>Reply</button>
-          <div>from <a class='user_addr' href='/user?addr=${e[2]['pubkey']}'>${e[2]['pubkey']}</a><br>
+          <div>from <a class='user_addr' href='/person?addr=${e[2]['pubkey']}'>${e[2]['pubkey']}</a><br>
             <button class='user_follow'>Follow</button>
             <button class='user_unfollow'>Unfollow</button>
             <button class='user_pm'>PM</button>
@@ -343,14 +343,14 @@ window.onload = async () => {
 
     });
 
-    const projects_response = await fetch('/api/projects');
-    const projects_data = await projects_response.json();
-    var attest_projects_html = '<select id="attest_params_$project">';
-    for(var i in projects_data){
-      console.log(projects_data[i]);
-      attest_projects_html += `<option value='${i}'>${projects_data[i]['name']}</option>`;
+    const organizations_response = await fetch('/api/organizations');
+    const organizations_data = await organizations_response.json();
+    var attest_organizations_html = '<select id="attest_params_$organization">';
+    for(var i in organizations_data){
+      console.log(organizations_data[i]);
+      attest_organizations_html += `<option value='${i}'>${organizations_data[i]['name']}</option>`;
     }
-    attest_projects_html += '</select>';
+    attest_organizations_html += '</select>';
 
     const response = await fetch('/api/attest_schemas');
     const schemas = await response.json();
@@ -369,8 +369,8 @@ window.onload = async () => {
         if(schemas['schemas'][i][j] == '$user'){
           attest_params.innerHTML += `<input id='attest_params_${schemas['schemas'][i][j]}' value='${user_id}' disabled><br/>`;
 
-        }else if(schemas['schemas'][i][j] == '$project'){
-          attest_params.innerHTML += attest_projects_html;
+        }else if(schemas['schemas'][i][j] == '$organization'){
+          attest_params.innerHTML += attest_organizations_html;
 
         }else if(schemas['schemas'][i][j] == '$role'){
           attest_params.innerHTML += `<select id='attest_params_${schemas['schemas'][i][j]}'>

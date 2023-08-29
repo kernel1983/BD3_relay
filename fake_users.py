@@ -23,7 +23,7 @@ def update_profile(sk):
         'name': 'KK',
         'about': 'about',
         'picture': 'picture',
-        'role': 'user',
+        'role': 'person',
     }
     json_bytes = json.dumps([0, a.address, t, 0, [], c], separators=(',', ':'), ensure_ascii=False)
     event_hash_id = hashlib.sha256(json_bytes.encode('utf8')).hexdigest()

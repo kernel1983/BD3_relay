@@ -282,7 +282,7 @@ class AttestSchemasAPIHandler(tornado.web.RequestHandler):
         self.add_header('access-control-allow-origin', '*')
         self.finish({'schemas':
             [ ['I meet offline with', '$user'],
-              ['$user', 'is the', '$role', 'of', '$project'],
+              ['$user', 'is the', '$role', 'of', '$organization'],
               ['$user', 'is the expert of', '$skill'], ]
         })
 
@@ -316,13 +316,13 @@ class Application(tornado.web.Application):
                 # (r"/dashboard", bd3.DashboardHandler),
                 # (r"/api/dashboard", bd3.DashboardAPIHandler),
 
-                (r"/user", bd3.UserHandler),
-                (r"/users", bd3.UsersHandler),
-                (r"/project", bd3.ProjectHandler),
-                (r"/projects", bd3.ProjectsHandler),
+                (r"/people", bd3.PeopleHandler),
+                (r"/person", bd3.PersonHandler),
+                (r"/organization", bd3.OrganzationHandler),
+                (r"/organizations", bd3.OrganzationsHandler),
                 (r"/need", bd3.NeedHandler),
-                (r"/api/users", bd3.UsersAPIHandler),
-                (r"/api/projects", bd3.ProjectsAPIHandler),
+                (r"/api/persons", bd3.PersonsAPIHandler),
+                (r"/api/organizations", bd3.OrganzationsAPIHandler),
                 (r"/api/attest_user", bd3.AttestUserAPIHandler),
                 (r"/api/attest_event", bd3.AttestEventAPIHandler),
                 (r"/api/attest_schemas", AttestSchemasAPIHandler),

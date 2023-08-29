@@ -148,7 +148,7 @@ window.onload = async () => {
           <button class='msg_unlike'>Unlike</button>
           <button class='msg_dislike'>Dislike</button>
           <button class='msg_undislike'>Undislike</button>
-          <div>from <a class='user_addr' href='/user?addr=${e[2]['pubkey']}'>${e[2]['pubkey']}</a><br>
+          <div>from <a class='user_addr' href='/person?addr=${e[2]['pubkey']}'>${e[2]['pubkey']}</a><br>
           </div>`;
       messages.prepend(p);
     });
