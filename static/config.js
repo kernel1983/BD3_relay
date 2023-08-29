@@ -2,6 +2,7 @@ let CHAIN_ID;
 let CHAIN_NAME;
 let RPC_URL;
 let RELAY_URL;
+let API_URL;
 
 if(window.location.hostname == 'api.web3bd.network'){
   RELAY_URL = 'wss://api.web3bd.network/relay';

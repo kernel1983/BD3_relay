@@ -146,12 +146,18 @@ class AttestUserAPIHandler(tornado.web.RequestHandler):
         addr = self.get_argument('addr')
         attest_rows = db_conn.iteritems()
         attest_rows.seek(('attest_%s' % addr).encode('utf8'))
+        result = {'users':[]}
         for attest_key, attest_value in attest_rows:
-            if not attest_key.startswith(('attest_%s' % addr).encode('utf8')):
+            if not attest_key.startswith(('attest_%s' % addr.lower()).encode('utf8')):
                 break
             print(attest_key, attest_value)
+            keys = attest_key.decode('utf8').split('_')
+            print(keys)
+            if len(keys[2]) == 42:
+                result['users'].append(keys[2])
 
         self.add_header('access-control-allow-origin', '*')
+        self.finish(result)
 
 class AttestEventAPIHandler(tornado.web.RequestHandler):
     def get(self):
