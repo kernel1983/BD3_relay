@@ -149,6 +149,9 @@ for (let p of params.entries()) {
 }
 const user_id = params.get('addr');
 
+const profile_name = document.getElementById('profile_name');
+const profile_about = document.getElementById('profile_about');
+const profile_pic_url = document.getElementById('profile_pic_url');
 
 const messages = document.getElementById('messages');
 const reply_to = document.getElementById('reply_to');
@@ -440,8 +443,8 @@ window.onload = async () => {
   }
 
   const response = await fetch(`/api/profile?addr=${user_id}`);
-  const data = await response.json();
-  console.log(data);
+  const data = (await response.json())['data'];
+  console.log('/api/profile', data);
   profile_name.innerText = data['name'];
   profile_about.innerText = data['about'];
   profile_pic_url.innerText = data['picture'];
