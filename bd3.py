@@ -123,19 +123,37 @@ class PersonsAPIHandler(tornado.web.RequestHandler):
         self.finish(results)
 
 
-class OrganzationsAPIHandler(tornado.web.RequestHandler):
+class OrganizationsAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
+        p = self.get_argument('from', None)
         event_rows = db_conn.iteritems()
-        event_rows.seek(b'profile_')
-        results = {}
+        if p:
+            event_rows.seek(('profile_%s' % p).encode('utf8'))
+        else:
+            event_rows.seek(b'profile_')
+
+        results = {'users': []}
+        count = 0
         for key, profile_json in event_rows:
             if not key.startswith(b'profile_'):
                 break
+            if p:
+                p = None
+                continue
+
             # print(key, profile_json)
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'organization':
-                results[key.decode('utf8').replace('profile_', '')] = profile
+                #results[key.decode('utf8').replace('profile_', '')] = profile
+                addr = key.decode('utf8').replace('profile_', '')
+                profile['address'] = addr
+                results['users'].append(profile)
+                results['next'] = addr
+
+            count += 1
+            if count >= 10:
+                break
 
         self.add_header('access-control-allow-origin', '*')
         self.finish(results)
@@ -184,11 +202,11 @@ class NeedHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/need.html')
 
-class OrganzationsHandler(tornado.web.RequestHandler):
+class OrganizationsHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/organizations.html')
 
-class OrganzationHandler(tornado.web.RequestHandler):
+class OrganizationHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
         db_conn = database.get_conn()
