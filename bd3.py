@@ -13,6 +13,7 @@ import tornado.websocket
 
 import database
 import console
+import setting
 
 
 class ContributionsHandler(tornado.web.RequestHandler):
@@ -109,16 +110,26 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
 class PersonsAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
+        # db_conn.put(('index_person_%s_9' % '0x').encode('utf8'), b'0xd565c577983aedd61915b84763eea032069ba6aa')
+        # db_conn.put(('index_person_%s_8' % '0x').encode('utf8'), b'0xd565c577983aedd61915b84763eea032069ba6aa')
+
+        addr = self.get_argument('addr', setting.default_addr)
+        p = self.get_argument('from', None)
+        results = {'persons': []}
         event_rows = db_conn.iteritems()
-        event_rows.seek(b'profile_')
-        results = {}
-        for key, profile_json in event_rows:
-            if not key.startswith(b'profile_'):
+        event_rows.seek(('index_person_%s_' % addr).encode('utf8'))
+        for key, user_addr in event_rows:
+            if not key.startswith(('index_person_%s_' % addr).encode('utf8')):
                 break
-            # console.log(key, profile_json)
+            console.log(key, user_addr)
+            profile_json = db_conn.get(b'profile_%s' % user_addr)
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'person':
-                results[key.decode('utf8').replace('profile_', '')] = profile
+                # results[key.decode('utf8').replace('profile_', '')] = profile
+                profile['address'] = user_addr.decode('utf8')
+                results['persons'].append(profile)
+                results['next'] = user_addr.decode('utf8')
+                results['total'] = 0
 
         self.add_header('access-control-allow-origin', '*')
         self.finish(results)
@@ -134,7 +145,7 @@ class OrganizationsAPIHandler(tornado.web.RequestHandler):
         else:
             event_rows.seek(b'profile_')
 
-        results = {'users': []}
+        results = {'organizations': []}
         count = 0
         for key, profile_json in event_rows:
             if not key.startswith(b'profile_'):
@@ -149,7 +160,7 @@ class OrganizationsAPIHandler(tornado.web.RequestHandler):
                 #results[key.decode('utf8').replace('profile_', '')] = profile
                 addr = key.decode('utf8').replace('profile_', '')
                 profile['address'] = addr
-                results['users'].append(profile)
+                results['organizations'].append(profile)
                 results['next'] = addr
 
             count += 1
@@ -158,6 +169,16 @@ class OrganizationsAPIHandler(tornado.web.RequestHandler):
 
         self.add_header('access-control-allow-origin', '*')
         self.finish(results)
+
+class PartnersAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        db_conn = database.get_conn()
+        p = self.get_argument('from', None)
+
+class ReputationsAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        db_conn = database.get_conn()
+        p = self.get_argument('from', None)
 
 class AttestUserAPIHandler(tornado.web.RequestHandler):
     def get(self):

@@ -348,10 +348,11 @@ window.onload = async () => {
 
     const organizations_response = await fetch('/api/organizations');
     const organizations_data = await organizations_response.json();
+    console.log('organizations_data', organizations_data);
     var attest_organizations_html = '<select id="attest_params_$organization">';
-    for(var i in organizations_data){
-      console.log(organizations_data[i]);
-      attest_organizations_html += `<option value='${i}'>${organizations_data[i]['name']}</option>`;
+    for(var i in organizations_data.users){
+      console.log(organizations_data.users[i]);
+      attest_organizations_html += `<option value="${i}">${organizations_data.users[i]['name']}</option>`;
     }
     attest_organizations_html += '</select>';
 

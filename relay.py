@@ -281,11 +281,12 @@ class FollowedAPIHandler(tornado.web.RequestHandler):
 class AttestSchemasAPIHandler(tornado.web.RequestHandler):
     def get(self):
         self.add_header('access-control-allow-origin', '*')
-        self.finish({'schemas':
-            [ ['I meet offline with', '$user'],
-              ['$user', 'is the', '$role', 'of', '$organization'],
-              ['$user', 'is the expert of', '$skill'], ]
-        })
+        self.finish({'schemas': [
+            ['$person', 'meets offline with', '$person'],
+            ['$person', 'is the expert of', '$skill'],
+            ['$organization', 'works with', '$person', 'as the', '$role'],
+            ['$organization', 'has established partnership with', '$organization'],
+        ]})
 
 class TestAPIHandler(tornado.web.RequestHandler):
     def post(self):
@@ -324,6 +325,8 @@ class Application(tornado.web.Application):
                 (r"/need", bd3.NeedHandler),
                 (r"/api/persons", bd3.PersonsAPIHandler),
                 (r"/api/organizations", bd3.OrganizationsAPIHandler),
+                (r"/api/partners", bd3.PartnersAPIHandler),
+                (r"/api/reputations", bd3.ReputationsAPIHandler),
                 (r"/api/attest_user", bd3.AttestUserAPIHandler),
                 (r"/api/attest_event", bd3.AttestEventAPIHandler),
                 (r"/api/attest_schemas", AttestSchemasAPIHandler),
