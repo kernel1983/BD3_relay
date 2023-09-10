@@ -16,6 +16,7 @@ import tornado.websocket
 
 import bd3
 import database
+import console
 
 
 subscriptions = {}
@@ -30,21 +31,21 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
         if self not in RelayHandler.child_miners:
             RelayHandler.child_miners.add(self)
 
-        print("RelayHandler connected")
+        console.log("RelayHandler connected")
 
 
     def on_close(self):
         if self in RelayHandler.child_miners:
             RelayHandler.child_miners.remove(self)
 
-        print("RelayHandler disconnected")
+        console.log("RelayHandler disconnected")
 
 
     @tornado.gen.coroutine
     def on_message(self, message):
         db_conn = database.get_conn()
         seq = tornado.escape.json_decode(message)
-        print("RelayHandler", seq)
+        console.log("RelayHandler", seq)
 
         if seq[0] == 'REQ':
             subscription_id = seq[1]
@@ -67,7 +68,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                     for event_key, event_id in event_rows:
                         if not event_key.startswith(b'user_'):
                             break
-                        print(event_key, event_id)
+                        console.log(event_key, event_id)
                         event_row = db_conn.get(b'event_%s' % event_id)
                         event = tornado.escape.json_decode(event_row)
                         rsp = ["EVENT", subscription_id, event]
@@ -77,7 +78,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             elif ids:
                 event_rows = []
                 for event_id in ids:
-                    print(event_id)
+                    console.log(event_id)
                     event_row = db_conn.get(b'event_%s' % event_id.encode('utf8'))
                     event = tornado.escape.json_decode(event_row)
                     rsp = ["EVENT", subscription_id, event]
@@ -86,14 +87,14 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
 
             elif tags:
                 for tag in tags:
-                    print(tag)
+                    console.log(tag)
                     if tag[0] == 't':
                         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
                         event_rows.seek(b'hashtag_%s' % hashed_tag.encode('utf8'))
                         for event_key, event_id in event_rows:
                             if not event_key.startswith(b'hashtag_%s' % hashed_tag.encode('utf8')):
                                 break
-                            print(event_key, event_id)
+                            console.log(event_key, event_id)
                             event_row = db_conn.get(b'event_%s' % event_id)
                             event = tornado.escape.json_decode(event_row)
                             rsp = ["EVENT", subscription_id, event]
@@ -105,14 +106,14 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                 for event_key, event_id in event_rows:
                     if not event_key.startswith(b'timeline_'):
                         break
-                    print(event_key, event_id)
+                    console.log(event_key, event_id)
                     event_row = db_conn.get(b'event_%s' % event_id)
-                    print(event_row)
+                    console.log(event_row)
                     event = tornado.escape.json_decode(event_row)
                     if event['kind'] == 1:
                         addr = event['pubkey'].lower()
                         profile_json = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
-                        # print(profile_json)
+                        # console.log(profile_json)
                         if profile_json:
                             profile = tornado.escape.json_decode(profile_json)
                             event['profile'] = profile
@@ -132,26 +133,26 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             kind = seq[1]['kind']
             tags = seq[1]['tags']
             content = seq[1]['content']
-            # print(content)
+            # console.log(content)
             sig = seq[1]['sig']
             data = tornado.escape.json_encode(seq[1])
 
             msg = json.dumps([0, addr, timestamp, kind, tags, content], separators=(',', ':'), ensure_ascii=False)
             message = eth_account.messages.encode_defunct(text=msg)
-            # print(message)
+            # console.log(message)
             sender = eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:]))
-            print(sender, addr)
+            console.log(sender, addr)
             assert sender.lower() == addr
 
             if kind == 0:
-                print('content', content)
+                console.log('content', content)
                 db_conn.put(b'profile_%s' % (addr.encode('utf8')), tornado.escape.json_encode(content).encode('utf8'))
 
             elif kind == 1:
                 tags = seq[1]['tags']
                 for tag in tags:
                     if tag[0] == 't':
-                        print('t', tag)
+                        console.log('t', tag)
                         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
                         db_conn.put(b'hashtag_%s_%s' % (hashed_tag.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
@@ -162,59 +163,59 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
                 tags = seq[1]['tags']
                 for tag in tags:
                     if tag[0] == 'follow':
-                        print('follow', tag)
+                        console.log('follow', tag)
 
                     elif tag[0] == 'unfollow':
-                        print('unfollow', tag)
+                        console.log('unfollow', tag)
 
                     elif tag[0] == 'like':
-                        print('like', tag)
+                        console.log('like', tag)
                         tweet_event_id = tag[1]
                         tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
                         tweet = tornado.escape.json_decode(tweet_json)
-                        print('tweet', tweet)
+                        console.log('tweet', tweet)
                         tweet.setdefault('likes', [])
                         tweet.setdefault('dislikes', [])
 
                     elif tag[0] == 'dislike':
-                        print('dislike', tag)
+                        console.log('dislike', tag)
                         tweet_event_id = tag[1]
                         tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
                         tweet = tornado.escape.json_decode(tweet_json)
-                        print('tweet', tweet)
+                        console.log('tweet', tweet)
                         tweet.setdefault('likes', [])
                         tweet.setdefault('dislikes', [])
 
                     elif tag[0] == 'unlike':
-                        print('unlike', tag)
+                        console.log('unlike', tag)
                         tweet_event_id = tag[1]
                         tweet_json = db_conn.get(b'tweet_%s' % (tweet_event_id.encode('utf8'), ))
                         tweet = tornado.escape.json_decode(tweet_json)
-                        print('tweet', tweet)
+                        console.log('tweet', tweet)
                         tweet.setdefault('likes', [])
                         tweet.setdefault('dislikes', [])
 
                     elif tag[0] == 'attest':
-                        print('attest', tag)
+                        console.log('attest', tag)
                         attest_user = tag[1]
                         attest_data = tag[2]
                         schemas = []
                         for i in attest_data:
-                            print(i)
+                            console.log(i)
                             if i[0] == '$' and ':' in i:
                                 p = i.index(':')
-                                print(i[:p])
+                                console.log(i[:p])
                                 schemas.append(i[:p])
                             else:
                                 schemas.append(i)
 
                         schemas_json = json.dumps(schemas, separators=(',', ':'), ensure_ascii=False)
                         attest_type = hashlib.sha256(schemas_json.encode('utf8')).hexdigest()
-                        print(attest_type)
+                        console.log(attest_type)
 
                         db_conn.put(('attest_%s_%s_%s' % (addr, attest_user, attest_type)).encode('utf8'), event_id.encode('utf8'))
 
-            print('data', data)
+            console.log('data', data)
             db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
             db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
@@ -249,7 +250,7 @@ class ProfileAPIHandler(tornado.web.RequestHandler):
         db_conn = database.get_conn()
         addr = self.get_argument('addr')
         content = db_conn.get(b'profile_%s' % (addr.lower().encode('utf8')))
-        print(content)
+        console.log(content)
 
         result = {
             'errno': 0,
@@ -289,11 +290,11 @@ class AttestSchemasAPIHandler(tornado.web.RequestHandler):
 class TestAPIHandler(tornado.web.RequestHandler):
     def post(self):
         sig = self.request.body
-        print(sig)
+        console.log(sig)
         message = eth_account.messages.encode_defunct(text='abcd')
-        print(message)
-        print(eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:].decode('utf8'))))
-        # print((web3.Web3()).eth.account.recover_message(message, signature=bytes.fromhex(sig[2:].decode('utf8'))))
+        console.log(message)
+        console.log(eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:].decode('utf8'))))
+        # console.log((web3.Web3()).eth.account.recover_message(message, signature=bytes.fromhex(sig[2:].decode('utf8'))))
 
 
 class Application(tornado.web.Application):

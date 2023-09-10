@@ -144,9 +144,10 @@ window.onload = async () => {
     const response = await fetch(`/api/organizations`);
     const data = await response.json();
     console.log(data);
-    for(var i in data){
+    for(var i in data.users){
+        console.log(i);
         organizations.innerHTML += `<div class='organization'>
-            <a href='/organization?addr=${i}'>${data[i]['name']}</a>
+            <a href='/organization?addr=${data.users[i]['address']}'>${data.users[i]['name']}</a>
         </div>`;
     }
 

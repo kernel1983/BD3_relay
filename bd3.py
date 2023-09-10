@@ -12,6 +12,7 @@ import tornado.escape
 import tornado.websocket
 
 import database
+import console
 
 
 class ContributionsHandler(tornado.web.RequestHandler):
@@ -39,9 +40,9 @@ class DashboardHandler(tornado.web.RequestHandler):
 #                 break
 
 #             addr = address_key.decode('utf8').replace('DAO_lxdao_', '').lower()
-#             print(addr, b'profile_%s' % (addr.encode('utf8')))
+#             console.log(addr, b'profile_%s' % (addr.encode('utf8')))
 #             profile_json = db_conn.get(b'profile_%s' % (addr.encode('utf8')))
-#             print(profile_json)
+#             console.log(profile_json)
 #             if profile_json:
 #                 profile = tornado.escape.json_decode(profile_json)
 #                 profile['addr'] = addr
@@ -56,9 +57,9 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
         db_conn = database.get_conn()
         now = datetime.datetime.now()
         this_month = datetime.datetime(now.year, now.month, 1)
-        print(this_month, this_month.timestamp())
+        console.log(this_month, this_month.timestamp())
         next_month = this_month + dateutil.relativedelta.relativedelta(months=1)
-        print(next_month, next_month.timestamp())
+        console.log(next_month, next_month.timestamp())
 
         since = int(next_month.timestamp())
         until = int(this_month.timestamp())
@@ -70,7 +71,7 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
         for event_key, event_id in event_rows:
             if not event_key.startswith(b'timeline_'):
                 break
-            # print(event_key, event_id)
+            # console.log(event_key, event_id)
             event_row = db_conn.get(b'event_%s' % event_id)
             event = tornado.escape.json_decode(event_row)
             qualified = 0
@@ -86,7 +87,7 @@ class DashboardAPIHandler(tornado.web.RequestHandler):
                 users.setdefault(event['pubkey'], {})
                 if 'profile' not in users[event['pubkey']]:
                     profile_json = db_conn.get(b'profile_%s' % (event['pubkey'].encode('utf8')))
-                    # print(profile_json)
+                    # console.log(profile_json)
                     if profile_json:
                         profile = tornado.escape.json_decode(profile_json)
                         users[event['pubkey']]['profile'] = profile
@@ -114,7 +115,7 @@ class PersonsAPIHandler(tornado.web.RequestHandler):
         for key, profile_json in event_rows:
             if not key.startswith(b'profile_'):
                 break
-            # print(key, profile_json)
+            # console.log(key, profile_json)
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'person':
                 results[key.decode('utf8').replace('profile_', '')] = profile
@@ -142,7 +143,7 @@ class OrganizationsAPIHandler(tornado.web.RequestHandler):
                 p = None
                 continue
 
-            # print(key, profile_json)
+            # console.log(key, profile_json)
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'organization':
                 #results[key.decode('utf8').replace('profile_', '')] = profile
@@ -168,9 +169,9 @@ class AttestUserAPIHandler(tornado.web.RequestHandler):
         for attest_key, attest_value in attest_rows:
             if not attest_key.startswith(('attest_%s' % addr.lower()).encode('utf8')):
                 break
-            print(attest_key, attest_value)
+            console.log(attest_key, attest_value)
             keys = attest_key.decode('utf8').split('_')
-            print(keys)
+            console.log(keys)
             if len(keys[2]) == 42:
                 result['users'].append(keys[2])
 
@@ -190,7 +191,7 @@ class PersonHandler(tornado.web.RequestHandler):
         addr = self.get_argument('addr')
         db_conn = database.get_conn()
         profile_json = db_conn.get(('profile_%s' % addr).encode('utf8'))
-        print(profile_json)
+        console.log(profile_json)
         if profile_json:
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'organization':
@@ -211,7 +212,7 @@ class OrganizationHandler(tornado.web.RequestHandler):
         addr = self.get_argument('addr')
         db_conn = database.get_conn()
         profile_json = db_conn.get(('profile_%s' % addr).encode('utf8'))
-        print(profile_json)
+        console.log(profile_json)
         if profile_json:
             profile = tornado.escape.json_decode(profile_json)
             if 'role' in profile and profile['role'] == 'person':
