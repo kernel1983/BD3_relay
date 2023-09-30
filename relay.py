@@ -142,25 +142,27 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             # console.log(message)
             sender = eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:]))
             console.log(sender, addr)
-            assert sender.lower() == addr
+            assert sender.lower() == addr.lower()
 
             if kind == 0:
                 console.log('content', content)
                 db_conn.put(b'profile_%s' % (addr.encode('utf8')), tornado.escape.json_encode(content).encode('utf8'))
 
             elif kind == 1:
-                tags = seq[1]['tags']
                 for tag in tags:
                     if tag[0] == 't':
                         console.log('t', tag)
                         hashed_tag = hashlib.sha256(tag[1].encode('utf8')).hexdigest()
                         db_conn.put(b'hashtag_%s_%s' % (hashed_tag.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
+                    elif tag[0] == 'r':
+                        parent_id = tag[1].encode('utf8')
+                        root_id = tag[2].encode('utf8')
+
                 db_conn.put(b'timeline_%s_%s' % (str(timestamp).encode('utf8'), addr.encode('utf8')), event_id.encode('utf8'))
                 db_conn.put(b'tweet_%s' % (event_id.encode('utf8'), ), tornado.escape.json_encode({}).encode('utf8'))
 
             elif kind == 3:
-                tags = seq[1]['tags']
                 for tag in tags:
                     if tag[0] == 'follow':
                         console.log('follow', tag)
@@ -324,6 +326,7 @@ class Application(tornado.web.Application):
                 (r"/organizations", bd3.OrganizationsHandler),
                 (r"/need", bd3.NeedHandler),
                 (r"/api/persons", bd3.PersonsAPIHandler),
+                (r"/api/persons_all", bd3.PersonsAllAPIHandler), # for algorithm
                 (r"/api/organizations", bd3.OrganizationsAPIHandler),
                 (r"/api/partners", bd3.PartnersAPIHandler),
                 (r"/api/reputations", bd3.ReputationsAPIHandler),
