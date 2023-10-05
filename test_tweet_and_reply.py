@@ -40,6 +40,7 @@ def new_tweet(sk):
 
 def reply_tweet(sk, event_id):
     a = web3.Account.from_key(hashlib.sha256(sk).hexdigest())
+    print(a.address)
     t = int(time.time())
     c = 'reply_tweet'
     k = 1

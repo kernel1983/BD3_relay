@@ -295,13 +295,6 @@ class PublicNeedAPIHandler(tornado.web.RequestHandler):
 class RelatedNeedAPIHandler(tornado.web.RequestHandler):
     def get(self):
         addr = self.get_argument('addr')
-        db_conn = database.get_conn()
-        event_rows = db_conn.iteritems()
-        self.render('static/need.html')
-
-class MyNeedAPIHandler(tornado.web.RequestHandler):
-    def get(self):
-        addr = self.get_argument('addr')
         tweets = []
         db_conn = database.get_conn()
 
@@ -322,6 +315,35 @@ class MyNeedAPIHandler(tornado.web.RequestHandler):
                 if tag[0] == 'r':
                     root_id = tag[1]
                     break
+
+            tweet_json = db_conn.get(b'tweet_%s' % root_id.encode('utf8'))
+            tweet_obj = tornado.escape.json_decode(tweet_json)
+            #self.write('<br><br>')
+            tweets.append(tweet_obj)
+
+        self.finish({'tweets': tweets})
+
+class MyNeedAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        addr = self.get_argument('addr')
+        tweets = []
+        db_conn = database.get_conn()
+
+        event_rows = db_conn.iteritems()
+        event_rows.seek(('user_%s' % addr).encode('utf8'))
+        for event_key, event_id in event_rows:
+            if not event_key.startswith(('user_%s' % addr).encode('utf8')):
+                break
+
+            event_json = db_conn.get(b'event_%s' % event_id)
+            event_obj = tornado.escape.json_decode(event_json)
+            root_id = event_obj['id']
+            for tag in event_obj.get('tags', []):
+                if tag[0] == 'r':
+                    root_id = tag[1]
+                    break
+            if event_id.decode('utf8') != root_id:
+                continue
 
             tweet_json = db_conn.get(b'tweet_%s' % root_id.encode('utf8'))
             tweet_obj = tornado.escape.json_decode(tweet_json)
