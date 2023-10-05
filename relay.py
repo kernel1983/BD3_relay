@@ -229,6 +229,11 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             db_conn.put(b'event_%s' % (event_id.encode('utf8'), ), data.encode('utf8'))
             db_conn.put(b'user_%s_%s' % (addr.encode('utf8'), str(timestamp).encode('utf8')), event_id.encode('utf8'))
 
+            #['OK', <event_id>, <true|false>, <message>]
+            rsp = ['OK', event_id]
+            rsp_json = tornado.escape.json_encode(rsp)
+            self.write_message(rsp_json)
+
         elif seq[0] == 'CLOSE':
             pass
 
@@ -333,6 +338,9 @@ class Application(tornado.web.Application):
                 (r"/organization", bd3.OrganizationHandler),
                 (r"/organizations", bd3.OrganizationsHandler),
                 (r"/need", bd3.NeedHandler),
+                (r"/api/my_needs", bd3.MyNeedAPIHandler),
+                (r"/api/related_needs", bd3.RelatedNeedAPIHandler),
+                (r"/api/public_needs", bd3.PublicNeedAPIHandler),
                 (r"/api/persons", bd3.PersonsAPIHandler),
                 (r"/api/persons_all", bd3.PersonsAllAPIHandler), # for algorithm
                 (r"/api/organizations", bd3.OrganizationsAPIHandler),

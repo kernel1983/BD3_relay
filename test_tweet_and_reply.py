@@ -15,6 +15,7 @@ import tornado.websocket
 
 def new_tweet(sk):
     a = web3.Account.from_key(hashlib.sha256(sk).hexdigest())
+    print(a.address)
     t = int(time.time())
     c = 'new_tweet'
     k = 1
@@ -75,35 +76,41 @@ class RelayClient:
         #try:
         self.ws = yield tornado.websocket.websocket_connect(self.url)
 
-        event_id, msg_seq = new_tweet(b'1')
-        msg = json.dumps(msg_seq)
-        self.ws.write_message(msg)
-
-        event_id, msg_seq = reply_tweet(b'2', event_id)
-        msg = json.dumps(msg_seq)
-        self.ws.write_message(msg)
-
         #except Exception:
         #    pass
         self.run()
 
+    @tornado.gen.coroutine
     def run(self):
-        nonce = 2
+        nonce = 0
         while True:
-            #msg = yield self.ws.read_message()
-            #print(msg)
-            #if msg is None:
-            #    self.ws = None
-            #    break
-            #else:
-            #    seq = json.loads(msg)
+            if nonce == 0:
+                event_id, msg_seq = new_tweet(b'1')
+                msg = json.dumps(msg_seq)
+                self.ws.write_message(msg)
+
+            msg = yield self.ws.read_message()
+            print(msg)
+            if msg is None:
+                self.ws = None
+                break
+            else:
+                seq = json.loads(msg)
+                nonce += 1
+
+                if nonce == 2:
+                    break
+
+                event_id, msg_seq = reply_tweet(b'2', event_id)
+                msg = json.dumps(msg_seq)
+                self.ws.write_message(msg)
 
             #msg = update_profile(str(nonce).encode('utf8'))
             #self.ws.write_message(msg)
-            nonce += 1
+
             time.sleep(1)
 
-
+        tornado.ioloop.IOLoop.instance().stop()
 if __name__ == "__main__":
     client = RelayClient("ws://127.0.0.1:8053/relay")
     tornado.ioloop.IOLoop.instance().start()

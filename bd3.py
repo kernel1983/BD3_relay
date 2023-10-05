@@ -18,19 +18,19 @@ import console
 import setting
 
 
-class ContributionsHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('static/contributions.html')
+# class ContributionsHandler(tornado.web.RequestHandler):
+#     def get(self):
+#         self.render('static/contributions.html')
 
 
-class ContributorsHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('static/contributors.html')
+# class ContributorsHandler(tornado.web.RequestHandler):
+#     def get(self):
+#         self.render('static/contributors.html')
 
 
-class DashboardHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('static/dashboard.html')
+# class DashboardHandler(tornado.web.RequestHandler):
+#     def get(self):
+#         self.render('static/dashboard.html')
 
 # class ContributorsAPIHandler(tornado.web.RequestHandler):
 #     def get(self):
@@ -286,6 +286,50 @@ class PersonHandler(tornado.web.RequestHandler):
 class NeedHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('static/need.html')
+
+class PublicNeedAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        db_conn = database.get_conn()
+        self.render('static/need.html')
+
+class RelatedNeedAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        addr = self.get_argument('addr')
+        db_conn = database.get_conn()
+        event_rows = db_conn.iteritems()
+        self.render('static/need.html')
+
+class MyNeedAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        addr = self.get_argument('addr')
+        tweets = []
+        db_conn = database.get_conn()
+
+        event_rows = db_conn.iteritems()
+        event_rows.seek(('user_%s' % addr).encode('utf8'))
+        for event_key, event_id in event_rows:
+            if not event_key.startswith(('user_%s' % addr).encode('utf8')):
+                break
+            #self.write(event_key.decode('utf8'))
+            #self.write('<br>')
+            #self.write(event_id.decode('utf8')+'\n')
+            #self.write('<br>')
+            event_json = db_conn.get(b'event_%s' % event_id)
+            #self.write(event_json.decode('utf8')+'\n')
+            event_obj = tornado.escape.json_decode(event_json)
+            root_id = event_obj['id']
+            for tag in event_obj.get('tags', []):
+                if tag[0] == 'r':
+                    root_id = tag[1]
+                    break
+
+            tweet_json = db_conn.get(b'tweet_%s' % root_id.encode('utf8'))
+            tweet_obj = tornado.escape.json_decode(tweet_json)
+            #self.write('<br><br>')
+            tweets.append(tweet_obj)
+
+        self.finish({'tweets': tweets})
+
 
 class OrganizationsHandler(tornado.web.RequestHandler):
     def get(self):
