@@ -13,6 +13,7 @@ import tornado.gen
 import tornado.escape
 import tornado.websocket
 
+import tweet
 import database
 import console
 import setting
@@ -308,6 +309,7 @@ class PublicNeedAPIHandler(tornado.web.RequestHandler):
 
             tweet_json = db_conn.get(b'tweet_%s' % root_id.encode('utf8'))
             tweet_obj = tornado.escape.json_decode(tweet_json)
+            tweet.load_content(db_conn, tweet_obj)
             tweets.append(tweet_obj)
 
         self.finish({'tweets': tweets})

@@ -1,4 +1,6 @@
 
+import tornado.escape
+
 def reply(root_tweet, parent_id, reply_tweet):
     if root_tweet['id'] == parent_id:
         root_tweet.setdefault('replies', [])
@@ -22,12 +24,6 @@ def _get(replies, reply_id):
             return r
 
 def reply2(root_tweet, parent_id, reply_tweet):
-
-    #tweet = _get(root_tweet['replies'], parent_id)
-    #print('reply', tweet)
-    #tweet.setdefault('replies', [])
-    #tweet['replies'].append(reply_tweet)
-
     queue = [root_tweet]
     while queue:
         obj = queue.pop(0)
@@ -40,11 +36,15 @@ def reply2(root_tweet, parent_id, reply_tweet):
         for reply in obj.get('replies', []):
             queue.append(reply)
 
-def load_content(db, tweet_obj):
+def load_content(db_conn, tweet_obj):
     queue = [tweet_obj]
     while queue:
         obj = queue.pop(0)
         print(obj['id'])
+        event_json = db_conn.get(('event_%s' % obj['id']).encode('utf8'))
+        event = tornado.escape.json_decode(event_json)
+        obj['content'] = event['content']
+        obj['author'] = event['pubkey']
         for reply in obj.get('replies', []):
             queue.append(reply)
 
