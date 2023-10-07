@@ -344,6 +344,7 @@ class Application(tornado.web.Application):
                 (r"/api/persons", bd3.PersonsAPIHandler),
                 (r"/api/persons_all", bd3.PersonsAllAPIHandler), # for algorithm
                 (r"/api/organizations", bd3.OrganizationsAPIHandler),
+                (r"/api/organizations_search", bd3.OrganizationsSearchAPIHandler),
                 (r"/api/partners", bd3.PartnersAPIHandler),
                 (r"/api/reputations", bd3.ReputationsAPIHandler),
                 (r"/api/attest_user", bd3.AttestUserAPIHandler),

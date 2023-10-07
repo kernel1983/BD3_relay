@@ -190,6 +190,46 @@ class OrganizationsAPIHandler(tornado.web.RequestHandler):
         self.add_header('access-control-allow-origin', '*')
         self.finish(results)
 
+
+class OrganizationsSearchAPIHandler(tornado.web.RequestHandler):
+    def get(self):
+        k = self.get_argument('key')
+        p = self.get_argument('from', None)
+
+        db_conn = database.get_conn()
+        event_rows = db_conn.iteritems()
+        if p:
+            event_rows.seek(('profile_%s' % p).encode('utf8'))
+        else:
+            event_rows.seek(b'profile_')
+
+        results = {'organizations': []}
+        count = 0
+        for key, profile_json in event_rows:
+            if not key.startswith(b'profile_'):
+                break
+            if p:
+                p = None
+                continue
+
+            # console.log(key, profile_json)
+            profile = tornado.escape.json_decode(profile_json)
+            if 'role' in profile and profile['role'] == 'organization':
+                #results[key.decode('utf8').replace('profile_', '')] = profile
+                addr = key.decode('utf8').replace('profile_', '')
+                profile['address'] = addr
+                results['next'] = addr
+                if k in profile['name'] or k in profile['about']:
+                    results['organizations'].append(profile)
+
+            count += 1
+            # if count >= 10:
+            #     break
+
+        self.add_header('access-control-allow-origin', '*')
+        self.finish(results)
+
+
 class PartnersAPIHandler(tornado.web.RequestHandler):
     def get(self):
         db_conn = database.get_conn()
