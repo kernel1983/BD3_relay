@@ -2,6 +2,7 @@
 import os
 import json
 import hashlib
+import string
 
 import eth_account
 
@@ -19,6 +20,10 @@ import tweet
 import database
 import console
 
+
+HANDLE_CHARS = string.ascii_lowercase + string.digits + '_'
+HANDLE_CHARS_SET = set(string.ascii_lowercase + string.digits + '_')
+print(HANDLE_CHARS)
 
 subscriptions = {}
 
@@ -128,8 +133,12 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             self.write_message(rsp_json)
 
         elif seq[0] == 'EVENT':
+            handle = seq[1]['handle']
+            assert type(handle) is str
+            assert set(handle) - HANDLE_CHARS_SET == set()
+
             event_id = seq[1]['id']
-            addr = seq[1]['pubkey']
+            addr = seq[1]['addr']
             timestamp = seq[1]['created_at']
             kind = seq[1]['kind']
             tags = seq[1]['tags']
@@ -138,7 +147,7 @@ class RelayHandler(tornado.websocket.WebSocketHandler):
             sig = seq[1]['sig']
             data = tornado.escape.json_encode(seq[1])
 
-            msg = json.dumps([0, addr, timestamp, kind, tags, content], separators=(',', ':'), ensure_ascii=False)
+            msg = json.dumps([0, handle, addr, timestamp, kind, tags, content], separators=(',', ':'), ensure_ascii=False)
             message = eth_account.messages.encode_defunct(text=msg)
             console.log(sig)
             sender = eth_account.Account.recover_message(message, signature=bytes.fromhex(sig[2:]))
